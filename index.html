@@ -1,0 +1,1216 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="initial-scale=1,user-scalable=no,maximum-scale=1,width=device-width">
+        <meta name="mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <link rel="stylesheet" href="css/leaflet.css">
+        <link rel="stylesheet" href="css/qgis2web.css"><link rel="stylesheet" href="css/fontawesome-all.min.css">
+        <link rel="stylesheet" href="css/filter.css">
+<link rel="stylesheet" href="css/nouislider.min.css">
+        <link rel="stylesheet" href="css/leaflet-control-geocoder.Geocoder.css">
+        <style>
+        html, body, #map {
+            width: 100%;
+            height: 100%;
+            padding: 0;
+            margin: 0;
+        }
+        </style>
+        <title>Beslutad kollektivtrafik 2045 FM - Busstrafik</title>
+    </head>
+    <body>
+        <div id="map">
+        </div>
+        <script src="js/qgis2web_expressions.js"></script>
+        <script src="js/leaflet.js"></script>
+        <script src="js/leaflet.rotatedMarker.js"></script>
+        <script src="js/leaflet.pattern.js"></script>
+        <script src="js/leaflet-hash.js"></script>
+        <script src="js/Autolinker.min.js"></script>
+        <script src="js/rbush.min.js"></script>
+        <script src="js/labelgun.min.js"></script>
+        <script src="js/labels.js"></script>
+        <script src="js/leaflet-control-geocoder.Geocoder.js"></script>
+        <script src="js/tailDT.js"></script>
+<script src="js/nouislider.min.js"></script>
+<script src="js/wNumb.js"></script>
+        <script src="data/Busslinjer_1.js"></script>
+        <script src="data/Hllplatser_2.js"></script>
+        <script>
+        var highlightLayer;
+        function highlightFeature(e) {
+            highlightLayer = e.target;
+
+            if (e.target.feature.geometry.type === 'LineString') {
+              highlightLayer.setStyle({
+                color: '#ffff00',
+              });
+            } else {
+              highlightLayer.setStyle({
+                fillColor: '#ffff00',
+                fillOpacity: 1
+              });
+            }
+        }
+        var map = L.map('map', {
+            zoomControl:true, maxZoom:28, minZoom:2
+        }).fitBounds([[58.78591068861396,15.466774336796098],[60.03660033222075,21.244498088230344]]);
+        var hash = new L.Hash(map);
+        map.attributionControl.setPrefix('<a href="https://github.com/tomchadwin/qgis2web" target="_blank">qgis2web</a> &middot; <a href="https://leafletjs.com" title="A JS library for interactive maps">Leaflet</a> &middot; <a href="https://qgis.org">QGIS</a>');
+        var autolinker = new Autolinker({truncate: {length: 30, location: 'smart'}});
+        var bounds_group = new L.featureGroup([]);
+        function setBounds() {
+        }
+        map.createPane('pane_OpenStreetMap_0');
+        map.getPane('pane_OpenStreetMap_0').style.zIndex = 400;
+        var layer_OpenStreetMap_0 = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            pane: 'pane_OpenStreetMap_0',
+            opacity: 1.0,
+            attribution: '',
+            minZoom: 2,
+            maxZoom: 28,
+            minNativeZoom: 0,
+            maxNativeZoom: 19
+        });
+        layer_OpenStreetMap_0;
+        map.addLayer(layer_OpenStreetMap_0);
+        function pop_Busslinjer_1(feature, layer) {
+            layer.on({
+                mouseout: function(e) {
+                    for (i in e.target._eventParents) {
+                        e.target._eventParents[i].resetStyle(e.target);
+                    }
+                },
+                mouseover: highlightFeature,
+            });
+            var popupContent = '<table>\
+                    <tr>\
+                        <th scope="row">TSYSCODE</th>\
+                        <td>' + (feature.properties['TSYSCODE'] !== null ? autolinker.link(feature.properties['TSYSCODE'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">LINENAME</th>\
+                        <td>' + (feature.properties['LINENAME'] !== null ? autolinker.link(feature.properties['LINENAME'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">NAME</th>\
+                        <td>' + (feature.properties['NAME'] !== null ? autolinker.link(feature.properties['NAME'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">AVG_FM_MAX</th>\
+                        <td>' + (feature.properties['AVG_FM_MAX'] !== null ? autolinker.link(feature.properties['AVG_FM_MAX'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">HEADWAY_FM</th>\
+                        <td>' + (feature.properties['HEADWAY_~3'] !== null ? autolinker.link(((feature.properties['HEADWAY_~3']/60).toFixed(1)).toLocaleString()+' min') : '') + '</td>\
+                    </tr>\
+                </table>';
+            layer.bindPopup(popupContent, {maxHeight: 400});
+        }
+
+        function style_Busslinjer_1_0() {
+            return {
+                pane: 'pane_Busslinjer_1',
+                opacity: 1,
+                color: 'rgba(201,0,54,1.0)',
+                dashArray: '',
+                lineCap: 'square',
+                lineJoin: 'bevel',
+                weight: 3.0,
+                fillOpacity: 0,
+                interactive: true,
+            }
+        }
+        map.createPane('pane_Busslinjer_1');
+        map.getPane('pane_Busslinjer_1').style.zIndex = 401;
+        map.getPane('pane_Busslinjer_1').style['mix-blend-mode'] = 'normal';
+        var layer_Busslinjer_1 = new L.geoJson(json_Busslinjer_1, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_Busslinjer_1',
+            layerName: 'layer_Busslinjer_1',
+            pane: 'pane_Busslinjer_1',
+            onEachFeature: pop_Busslinjer_1,
+            style: style_Busslinjer_1_0,
+        });
+        bounds_group.addLayer(layer_Busslinjer_1);
+        map.addLayer(layer_Busslinjer_1);
+        function pop_Hllplatser_2(feature, layer) {
+            layer.on({
+                mouseout: function(e) {
+                    for (i in e.target._eventParents) {
+                        e.target._eventParents[i].resetStyle(e.target);
+                    }
+                },
+                mouseover: highlightFeature,
+            });
+            var popupContent = '<table>\
+                    <tr>\
+                        <th scope="row">NO</th>\
+                        <td>' + (feature.properties['NO'] !== null ? autolinker.link(feature.properties['NO'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">LINENAME</th>\
+                        <td>' + (feature.properties['LINENAME'] !== null ? autolinker.link(feature.properties['LINENAME'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">NAMN</th>\
+                        <td>' + (feature.properties['NAMN'] !== null ? autolinker.link(feature.properties['NAMN'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">KOMMUN</th>\
+                        <td>' + (feature.properties['KOMMUN'] !== null ? autolinker.link(feature.properties['KOMMUN'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
+            layer.bindPopup(popupContent, {maxHeight: 400});
+        }
+
+        function style_Hllplatser_2_0() {
+            return {
+                pane: 'pane_Hllplatser_2',
+                radius: 3.2,
+                opacity: 1,
+                color: 'rgba(0,0,0,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0,
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(255,255,255,1.0)',
+                interactive: true,
+            }
+        }
+        map.createPane('pane_Hllplatser_2');
+        map.getPane('pane_Hllplatser_2').style.zIndex = 402;
+        map.getPane('pane_Hllplatser_2').style['mix-blend-mode'] = 'normal';
+        var layer_Hllplatser_2 = new L.geoJson(json_Hllplatser_2, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_Hllplatser_2',
+            layerName: 'layer_Hllplatser_2',
+            pane: 'pane_Hllplatser_2',
+            onEachFeature: pop_Hllplatser_2,
+            pointToLayer: function (feature, latlng) {
+                var context = {
+                    feature: feature,
+                    variables: {}
+                };
+                return L.circleMarker(latlng, style_Hllplatser_2_0(feature));
+            },
+        });
+        bounds_group.addLayer(layer_Hllplatser_2);
+        map.addLayer(layer_Hllplatser_2);
+            var title = new L.Control();
+            title.onAdd = function (map) {
+                this._div = L.DomUtil.create('div', 'info');
+                this.update();
+                return this._div;
+            };
+            title.update = function () {
+                this._div.innerHTML = '<h2>Beslutad kollektivtrafik 2045 FM - Busstrafik</h2>';
+            };
+            title.addTo(map);
+            var abstract = new L.Control({'position':'topright'});
+            abstract.onAdd = function (map) {
+                this._div = L.DomUtil.create('div',
+                'leaflet-control abstract');
+                this._div.id = 'abstract'
+
+                    abstract.show();
+                    return this._div;
+                };
+                abstract.show = function () {
+                    this._div.classList.remove("abstract");
+                    this._div.classList.add("abstractUncollapsed");
+                    this._div.innerHTML = 'SU Analys - November 2024<br /><br />Disclaimer: Analyssektionen tar inte ansvar för hur denna information används';
+            };
+            abstract.addTo(map);
+        var osmGeocoder = new L.Control.Geocoder({
+            collapsed: true,
+            position: 'topleft',
+            text: 'Search',
+            title: 'Testing'
+        }).addTo(map);
+        document.getElementsByClassName('leaflet-control-geocoder-icon')[0]
+        .className += ' fa fa-search';
+        document.getElementsByClassName('leaflet-control-geocoder-icon')[0]
+        .title += 'Search for a place';
+        var baseMaps = {};
+        L.control.layers(baseMaps,{'<img src="legend/Hllplatser_2.png" /> Hållplatser': layer_Hllplatser_2,'<img src="legend/Busslinjer_1.png" /> Busslinjer': layer_Busslinjer_1,"OpenStreetMap": layer_OpenStreetMap_0,},{collapsed:false}).addTo(map);
+        setBounds();
+        var mapDiv = document.getElementById('map');
+        var row = document.createElement('div');
+        row.className="row";
+        row.id="all";
+        row.style.height = "100%";
+        var col1 = document.createElement('div');
+        col1.className="col9";
+        col1.id = "mapWindow";
+        col1.style.height = "99%";
+        col1.style.width = "80%";
+        col1.style.display = "inline-block";
+        var col2 = document.createElement('div');
+        col2.className="col3";
+        col2.id = "menu";
+        col2.style.display = "inline-block";
+        mapDiv.parentNode.insertBefore(row, mapDiv);
+        document.getElementById("all").appendChild(col1);
+        document.getElementById("all").appendChild(col2);
+        col1.appendChild(mapDiv)
+        var Filters = {"LINENAME": "str"};
+        function filterFunc() {
+          map.eachLayer(function(lyr){
+          if ("options" in lyr && "dataVar" in lyr["options"]){
+            features = this[lyr["options"]["dataVar"]].features.slice(0);
+            try{
+              for (key in Filters){
+                keyS = key.replace(/[^a-zA-Z0-9_]/g, "")
+                if (Filters[key] == "str" || Filters[key] == "bool"){
+                  var selection = [];
+                  var options = document.getElementById("sel_" + keyS).options
+                  for (var i=0; i < options.length; i++) {
+                    if (options[i].selected) selection.push(options[i].value);
+                  }
+                    try{
+                      if (key in features[0].properties){
+                        for (i = features.length - 1;
+                          i >= 0; --i){
+                          if (selection.indexOf(
+                          features[i].properties[key])<0
+                          && selection.length>0) {
+                          features.splice(i,1);
+                          }
+                        }
+                      }
+                    } catch(err){
+                  }
+                }
+                if (Filters[key] == "int"){
+                  sliderVals =  document.getElementById(
+                    "div_" + keyS).noUiSlider.get();
+                  try{
+                    if (key in features[0].properties){
+                    for (i = features.length - 1; i >= 0; --i){
+                      if (parseInt(features[i].properties[key])
+                          < sliderVals[0]
+                          || parseInt(features[i].properties[key])
+                          > sliderVals[1]){
+                            features.splice(i,1);
+                          }
+                        }
+                      }
+                    } catch(err){
+                    }
+                  }
+                if (Filters[key] == "real"){
+                  sliderVals =  document.getElementById(
+                    "div_" + keyS).noUiSlider.get();
+                  try{
+                    if (key in features[0].properties){
+                    for (i = features.length - 1; i >= 0; --i){
+                      if (features[i].properties[key]
+                          < sliderVals[0]
+                          || features[i].properties[key]
+                          > sliderVals[1]){
+                            features.splice(i,1);
+                          }
+                        }
+                      }
+                    } catch(err){
+                    }
+                  }
+                if (Filters[key] == "date"
+                  || Filters[key] == "datetime"
+                  || Filters[key] == "time"){
+                  try{
+                    if (key in features[0].properties){
+                      HTMLkey = key.replace(/[&\/\\#,+()$~%.'":*?<>{} ]/g, '');
+                      startdate = document.getElementById("dat_" +
+                        HTMLkey + "_date1").value.replace(" ", "T");
+                      enddate = document.getElementById("dat_" +
+                        HTMLkey + "_date2").value.replace(" ", "T");
+                      for (i = features.length - 1; i >= 0; --i){
+                        if (features[i].properties[key] < startdate
+                          || features[i].properties[key] > enddate){
+                          features.splice(i,1);
+                        }
+                      }
+                    }
+                  } catch(err){
+                  }
+                }
+              }
+            } catch(err){
+            }
+          this[lyr["options"]["layerName"]].clearLayers();
+          this[lyr["options"]["layerName"]].addData(features);
+          }
+          })
+        }
+            document.getElementById("menu").appendChild(
+                document.createElement("div"));
+            var div_LINENAME = document.createElement('div');
+            div_LINENAME.id = "div_LINENAME";
+            div_LINENAME.className= "filterselect";
+            document.getElementById("menu").appendChild(div_LINENAME);
+            sel_LINENAME = document.createElement('select');
+            sel_LINENAME.multiple = true;
+            sel_LINENAME.size = 10;
+            sel_LINENAME.id = "sel_LINENAME";
+            var LINENAME_options_str = "<option value='' unselected></option>";
+            sel_LINENAME.onchange = function(){filterFunc()};
+            LINENAME_options_str  += '<option value="112N">112N</option>';
+            LINENAME_options_str  += '<option value="112S">112S</option>';
+            LINENAME_options_str  += '<option value="113E">113E</option>';
+            LINENAME_options_str  += '<option value="113Ea">113Ea</option>';
+            LINENAME_options_str  += '<option value="113W">113W</option>';
+            LINENAME_options_str  += '<option value="113Wa">113Wa</option>';
+            LINENAME_options_str  += '<option value="113Wb">113Wb</option>';
+            LINENAME_options_str  += '<option value="114E">114E</option>';
+            LINENAME_options_str  += '<option value="115E">115E</option>';
+            LINENAME_options_str  += '<option value="116N">116N</option>';
+            LINENAME_options_str  += '<option value="116S">116S</option>';
+            LINENAME_options_str  += '<option value="117N">117N</option>';
+            LINENAME_options_str  += '<option value="117S">117S</option>';
+            LINENAME_options_str  += '<option value="117Sa">117Sa</option>';
+            LINENAME_options_str  += '<option value="118E">118E</option>';
+            LINENAME_options_str  += '<option value="118W">118W</option>';
+            LINENAME_options_str  += '<option value="119E">119E</option>';
+            LINENAME_options_str  += '<option value="119W">119W</option>';
+            LINENAME_options_str  += '<option value="124E">124E</option>';
+            LINENAME_options_str  += '<option value="124W">124W</option>';
+            LINENAME_options_str  += '<option value="127E">127E</option>';
+            LINENAME_options_str  += '<option value="127W">127W</option>';
+            LINENAME_options_str  += '<option value="133E">133E</option>';
+            LINENAME_options_str  += '<option value="133W">133W</option>';
+            LINENAME_options_str  += '<option value="135E">135E</option>';
+            LINENAME_options_str  += '<option value="135W">135W</option>';
+            LINENAME_options_str  += '<option value="141N">141N</option>';
+            LINENAME_options_str  += '<option value="141S">141S</option>';
+            LINENAME_options_str  += '<option value="142N">142N</option>';
+            LINENAME_options_str  += '<option value="142S">142S</option>';
+            LINENAME_options_str  += '<option value="143E">143E</option>';
+            LINENAME_options_str  += '<option value="143W">143W</option>';
+            LINENAME_options_str  += '<option value="144E">144E</option>';
+            LINENAME_options_str  += '<option value="144Ea">144Ea</option>';
+            LINENAME_options_str  += '<option value="144W">144W</option>';
+            LINENAME_options_str  += '<option value="147N">147N</option>';
+            LINENAME_options_str  += '<option value="147S">147S</option>';
+            LINENAME_options_str  += '<option value="152N">152N</option>';
+            LINENAME_options_str  += '<option value="152S">152S</option>';
+            LINENAME_options_str  += '<option value="155N">155N</option>';
+            LINENAME_options_str  += '<option value="155S">155S</option>';
+            LINENAME_options_str  += '<option value="156S">156S</option>';
+            LINENAME_options_str  += '<option value="157E">157E</option>';
+            LINENAME_options_str  += '<option value="157W">157W</option>';
+            LINENAME_options_str  += '<option value="158N">158N</option>';
+            LINENAME_options_str  += '<option value="158S">158S</option>';
+            LINENAME_options_str  += '<option value="159E">159E</option>';
+            LINENAME_options_str  += '<option value="159W">159W</option>';
+            LINENAME_options_str  += '<option value="160E">160E</option>';
+            LINENAME_options_str  += '<option value="160W">160W</option>';
+            LINENAME_options_str  += '<option value="161E">161E</option>';
+            LINENAME_options_str  += '<option value="161W">161W</option>';
+            LINENAME_options_str  += '<option value="163E">163E</option>';
+            LINENAME_options_str  += '<option value="163W">163W</option>';
+            LINENAME_options_str  += '<option value="164E">164E</option>';
+            LINENAME_options_str  += '<option value="164N">164N</option>';
+            LINENAME_options_str  += '<option value="164S">164S</option>';
+            LINENAME_options_str  += '<option value="165N">165N</option>';
+            LINENAME_options_str  += '<option value="165Na">165Na</option>';
+            LINENAME_options_str  += '<option value="165S">165S</option>';
+            LINENAME_options_str  += '<option value="165Sa">165Sa</option>';
+            LINENAME_options_str  += '<option value="167E">167E</option>';
+            LINENAME_options_str  += '<option value="167W">167W</option>';
+            LINENAME_options_str  += '<option value="172E">172E</option>';
+            LINENAME_options_str  += '<option value="172Ea">172Ea</option>';
+            LINENAME_options_str  += '<option value="172W">172W</option>';
+            LINENAME_options_str  += '<option value="172Wa">172Wa</option>';
+            LINENAME_options_str  += '<option value="176E">176E</option>';
+            LINENAME_options_str  += '<option value="176W">176W</option>';
+            LINENAME_options_str  += '<option value="177N">177N</option>';
+            LINENAME_options_str  += '<option value="177S">177S</option>';
+            LINENAME_options_str  += '<option value="178E">178E</option>';
+            LINENAME_options_str  += '<option value="178W">178W</option>';
+            LINENAME_options_str  += '<option value="179N">179N</option>';
+            LINENAME_options_str  += '<option value="179S">179S</option>';
+            LINENAME_options_str  += '<option value="180N">180N</option>';
+            LINENAME_options_str  += '<option value="180S">180S</option>';
+            LINENAME_options_str  += '<option value="181N">181N</option>';
+            LINENAME_options_str  += '<option value="181S">181S</option>';
+            LINENAME_options_str  += '<option value="184E">184E</option>';
+            LINENAME_options_str  += '<option value="188N">188N</option>';
+            LINENAME_options_str  += '<option value="188S">188S</option>';
+            LINENAME_options_str  += '<option value="1E">1E</option>';
+            LINENAME_options_str  += '<option value="1Ea">1Ea</option>';
+            LINENAME_options_str  += '<option value="1W">1W</option>';
+            LINENAME_options_str  += '<option value="201Ea">201Ea</option>';
+            LINENAME_options_str  += '<option value="201W">201W</option>';
+            LINENAME_options_str  += '<option value="203E">203E</option>';
+            LINENAME_options_str  += '<option value="203W">203W</option>';
+            LINENAME_options_str  += '<option value="204E">204E</option>';
+            LINENAME_options_str  += '<option value="204W">204W</option>';
+            LINENAME_options_str  += '<option value="205N">205N</option>';
+            LINENAME_options_str  += '<option value="205S">205S</option>';
+            LINENAME_options_str  += '<option value="206E">206E</option>';
+            LINENAME_options_str  += '<option value="206W">206W</option>';
+            LINENAME_options_str  += '<option value="211E">211E</option>';
+            LINENAME_options_str  += '<option value="212E">212E</option>';
+            LINENAME_options_str  += '<option value="212Wa">212Wa</option>';
+            LINENAME_options_str  += '<option value="222E">222E</option>';
+            LINENAME_options_str  += '<option value="225S">225S</option>';
+            LINENAME_options_str  += '<option value="238N">238N</option>';
+            LINENAME_options_str  += '<option value="238S">238S</option>';
+            LINENAME_options_str  += '<option value="2N">2N</option>';
+            LINENAME_options_str  += '<option value="2S">2S</option>';
+            LINENAME_options_str  += '<option value="301E">301E</option>';
+            LINENAME_options_str  += '<option value="301N">301N</option>';
+            LINENAME_options_str  += '<option value="301S">301S</option>';
+            LINENAME_options_str  += '<option value="302E">302E</option>';
+            LINENAME_options_str  += '<option value="302N">302N</option>';
+            LINENAME_options_str  += '<option value="302Sa">302Sa</option>';
+            LINENAME_options_str  += '<option value="303N">303N</option>';
+            LINENAME_options_str  += '<option value="305E">305E</option>';
+            LINENAME_options_str  += '<option value="305Wa">305Wa</option>';
+            LINENAME_options_str  += '<option value="309E">309E</option>';
+            LINENAME_options_str  += '<option value="309W">309W</option>';
+            LINENAME_options_str  += '<option value="311E">311E</option>';
+            LINENAME_options_str  += '<option value="311W">311W</option>';
+            LINENAME_options_str  += '<option value="312E">312E</option>';
+            LINENAME_options_str  += '<option value="312Ea">312Ea</option>';
+            LINENAME_options_str  += '<option value="312W">312W</option>';
+            LINENAME_options_str  += '<option value="315N">315N</option>';
+            LINENAME_options_str  += '<option value="315S">315S</option>';
+            LINENAME_options_str  += '<option value="316N">316N</option>';
+            LINENAME_options_str  += '<option value="316S">316S</option>';
+            LINENAME_options_str  += '<option value="317E">317E</option>';
+            LINENAME_options_str  += '<option value="317W">317W</option>';
+            LINENAME_options_str  += '<option value="323E">323E</option>';
+            LINENAME_options_str  += '<option value="323W">323W</option>';
+            LINENAME_options_str  += '<option value="325S">325S</option>';
+            LINENAME_options_str  += '<option value="336E">336E</option>';
+            LINENAME_options_str  += '<option value="336Ea">336Ea</option>';
+            LINENAME_options_str  += '<option value="338E">338E</option>';
+            LINENAME_options_str  += '<option value="342Eb">342Eb</option>';
+            LINENAME_options_str  += '<option value="350N">350N</option>';
+            LINENAME_options_str  += '<option value="350S">350S</option>';
+            LINENAME_options_str  += '<option value="3N">3N</option>';
+            LINENAME_options_str  += '<option value="3S">3S</option>';
+            LINENAME_options_str  += '<option value="401N">401N</option>';
+            LINENAME_options_str  += '<option value="401S">401S</option>';
+            LINENAME_options_str  += '<option value="402E">402E</option>';
+            LINENAME_options_str  += '<option value="402W">402W</option>';
+            LINENAME_options_str  += '<option value="402Wa">402Wa</option>';
+            LINENAME_options_str  += '<option value="410E">410E</option>';
+            LINENAME_options_str  += '<option value="410W">410W</option>';
+            LINENAME_options_str  += '<option value="413E">413E</option>';
+            LINENAME_options_str  += '<option value="413W">413W</option>';
+            LINENAME_options_str  += '<option value="414E">414E</option>';
+            LINENAME_options_str  += '<option value="414Wa">414Wa</option>';
+            LINENAME_options_str  += '<option value="417N">417N</option>';
+            LINENAME_options_str  += '<option value="417S">417S</option>';
+            LINENAME_options_str  += '<option value="418E">418E</option>';
+            LINENAME_options_str  += '<option value="418W">418W</option>';
+            LINENAME_options_str  += '<option value="421N">421N</option>';
+            LINENAME_options_str  += '<option value="422E">422E</option>';
+            LINENAME_options_str  += '<option value="422Wa">422Wa</option>';
+            LINENAME_options_str  += '<option value="423W">423W</option>';
+            LINENAME_options_str  += '<option value="424HE">424HE</option>';
+            LINENAME_options_str  += '<option value="424VE">424VE</option>';
+            LINENAME_options_str  += '<option value="425E">425E</option>';
+            LINENAME_options_str  += '<option value="425W">425W</option>';
+            LINENAME_options_str  += '<option value="426E">426E</option>';
+            LINENAME_options_str  += '<option value="426W">426W</option>';
+            LINENAME_options_str  += '<option value="428S">428S</option>';
+            LINENAME_options_str  += '<option value="428XW">428XW</option>';
+            LINENAME_options_str  += '<option value="429N">429N</option>';
+            LINENAME_options_str  += '<option value="429S">429S</option>';
+            LINENAME_options_str  += '<option value="429XW">429XW</option>';
+            LINENAME_options_str  += '<option value="430XE">430XE</option>';
+            LINENAME_options_str  += '<option value="430XW">430XW</option>';
+            LINENAME_options_str  += '<option value="433E">433E</option>';
+            LINENAME_options_str  += '<option value="433Eb">433Eb</option>';
+            LINENAME_options_str  += '<option value="433W">433W</option>';
+            LINENAME_options_str  += '<option value="433Wa">433Wa</option>';
+            LINENAME_options_str  += '<option value="434E">434E</option>';
+            LINENAME_options_str  += '<option value="434N">434N</option>';
+            LINENAME_options_str  += '<option value="434W">434W</option>';
+            LINENAME_options_str  += '<option value="434Wc">434Wc</option>';
+            LINENAME_options_str  += '<option value="435W">435W</option>';
+            LINENAME_options_str  += '<option value="436Ea">436Ea</option>';
+            LINENAME_options_str  += '<option value="436W">436W</option>';
+            LINENAME_options_str  += '<option value="437E">437E</option>';
+            LINENAME_options_str  += '<option value="437N">437N</option>';
+            LINENAME_options_str  += '<option value="437W">437W</option>';
+            LINENAME_options_str  += '<option value="438E">438E</option>';
+            LINENAME_options_str  += '<option value="438W">438W</option>';
+            LINENAME_options_str  += '<option value="439W">439W</option>';
+            LINENAME_options_str  += '<option value="440E">440E</option>';
+            LINENAME_options_str  += '<option value="440W">440W</option>';
+            LINENAME_options_str  += '<option value="441W">441W</option>';
+            LINENAME_options_str  += '<option value="442E">442E</option>';
+            LINENAME_options_str  += '<option value="442W">442W</option>';
+            LINENAME_options_str  += '<option value="443CE">443CE</option>';
+            LINENAME_options_str  += '<option value="443E">443E</option>';
+            LINENAME_options_str  += '<option value="443Ea">443Ea</option>';
+            LINENAME_options_str  += '<option value="443W">443W</option>';
+            LINENAME_options_str  += '<option value="445Ea">445Ea</option>';
+            LINENAME_options_str  += '<option value="445Wa">445Wa</option>';
+            LINENAME_options_str  += '<option value="446E">446E</option>';
+            LINENAME_options_str  += '<option value="447W">447W</option>';
+            LINENAME_options_str  += '<option value="449E">449E</option>';
+            LINENAME_options_str  += '<option value="449W">449W</option>';
+            LINENAME_options_str  += '<option value="458E">458E</option>';
+            LINENAME_options_str  += '<option value="458Wa">458Wa</option>';
+            LINENAME_options_str  += '<option value="462Wa">462Wa</option>';
+            LINENAME_options_str  += '<option value="465E">465E</option>';
+            LINENAME_options_str  += '<option value="465W">465W</option>';
+            LINENAME_options_str  += '<option value="467N">467N</option>';
+            LINENAME_options_str  += '<option value="467S">467S</option>';
+            LINENAME_options_str  += '<option value="469Ea">469Ea</option>';
+            LINENAME_options_str  += '<option value="469W">469W</option>';
+            LINENAME_options_str  += '<option value="474Ea">474Ea</option>';
+            LINENAME_options_str  += '<option value="474W">474W</option>';
+            LINENAME_options_str  += '<option value="474Wa">474Wa</option>';
+            LINENAME_options_str  += '<option value="4N">4N</option>';
+            LINENAME_options_str  += '<option value="4S">4S</option>';
+            LINENAME_options_str  += '<option value="502N">502N</option>';
+            LINENAME_options_str  += '<option value="502S">502S</option>';
+            LINENAME_options_str  += '<option value="503E">503E</option>';
+            LINENAME_options_str  += '<option value="503Ea">503Ea</option>';
+            LINENAME_options_str  += '<option value="503W">503W</option>';
+            LINENAME_options_str  += '<option value="503Wa">503Wa</option>';
+            LINENAME_options_str  += '<option value="504E">504E</option>';
+            LINENAME_options_str  += '<option value="504W">504W</option>';
+            LINENAME_options_str  += '<option value="505N">505N</option>';
+            LINENAME_options_str  += '<option value="505S">505S</option>';
+            LINENAME_options_str  += '<option value="506Ea">506Ea</option>';
+            LINENAME_options_str  += '<option value="506W">506W</option>';
+            LINENAME_options_str  += '<option value="507E">507E</option>';
+            LINENAME_options_str  += '<option value="508N">508N</option>';
+            LINENAME_options_str  += '<option value="508S">508S</option>';
+            LINENAME_options_str  += '<option value="509N">509N</option>';
+            LINENAME_options_str  += '<option value="509S">509S</option>';
+            LINENAME_options_str  += '<option value="50N">50N</option>';
+            LINENAME_options_str  += '<option value="50S">50S</option>';
+            LINENAME_options_str  += '<option value="512E">512E</option>';
+            LINENAME_options_str  += '<option value="512W">512W</option>';
+            LINENAME_options_str  += '<option value="513E">513E</option>';
+            LINENAME_options_str  += '<option value="514N">514N</option>';
+            LINENAME_options_str  += '<option value="514S">514S</option>';
+            LINENAME_options_str  += '<option value="514Sa">514Sa</option>';
+            LINENAME_options_str  += '<option value="515E">515E</option>';
+            LINENAME_options_str  += '<option value="515W">515W</option>';
+            LINENAME_options_str  += '<option value="516S">516S</option>';
+            LINENAME_options_str  += '<option value="517E">517E</option>';
+            LINENAME_options_str  += '<option value="517W">517W</option>';
+            LINENAME_options_str  += '<option value="518Na">518Na</option>';
+            LINENAME_options_str  += '<option value="518Sa">518Sa</option>';
+            LINENAME_options_str  += '<option value="520E">520E</option>';
+            LINENAME_options_str  += '<option value="520N">520N</option>';
+            LINENAME_options_str  += '<option value="520S">520S</option>';
+            LINENAME_options_str  += '<option value="520W">520W</option>';
+            LINENAME_options_str  += '<option value="521N">521N</option>';
+            LINENAME_options_str  += '<option value="521S">521S</option>';
+            LINENAME_options_str  += '<option value="522E">522E</option>';
+            LINENAME_options_str  += '<option value="523N">523N</option>';
+            LINENAME_options_str  += '<option value="523S">523S</option>';
+            LINENAME_options_str  += '<option value="524E">524E</option>';
+            LINENAME_options_str  += '<option value="524W">524W</option>';
+            LINENAME_options_str  += '<option value="525E">525E</option>';
+            LINENAME_options_str  += '<option value="525N">525N</option>';
+            LINENAME_options_str  += '<option value="525S">525S</option>';
+            LINENAME_options_str  += '<option value="525W">525W</option>';
+            LINENAME_options_str  += '<option value="526N">526N</option>';
+            LINENAME_options_str  += '<option value="526Sa">526Sa</option>';
+            LINENAME_options_str  += '<option value="527N">527N</option>';
+            LINENAME_options_str  += '<option value="527S">527S</option>';
+            LINENAME_options_str  += '<option value="528N">528N</option>';
+            LINENAME_options_str  += '<option value="528S">528S</option>';
+            LINENAME_options_str  += '<option value="529N">529N</option>';
+            LINENAME_options_str  += '<option value="529S">529S</option>';
+            LINENAME_options_str  += '<option value="52XN">52XN</option>';
+            LINENAME_options_str  += '<option value="52XS">52XS</option>';
+            LINENAME_options_str  += '<option value="531E">531E</option>';
+            LINENAME_options_str  += '<option value="531S">531S</option>';
+            LINENAME_options_str  += '<option value="531W">531W</option>';
+            LINENAME_options_str  += '<option value="532E">532E</option>';
+            LINENAME_options_str  += '<option value="532W">532W</option>';
+            LINENAME_options_str  += '<option value="533N">533N</option>';
+            LINENAME_options_str  += '<option value="533S">533S</option>';
+            LINENAME_options_str  += '<option value="534N">534N</option>';
+            LINENAME_options_str  += '<option value="534S">534S</option>';
+            LINENAME_options_str  += '<option value="535E">535E</option>';
+            LINENAME_options_str  += '<option value="536E">536E</option>';
+            LINENAME_options_str  += '<option value="536W">536W</option>';
+            LINENAME_options_str  += '<option value="537N">537N</option>';
+            LINENAME_options_str  += '<option value="537S">537S</option>';
+            LINENAME_options_str  += '<option value="538N">538N</option>';
+            LINENAME_options_str  += '<option value="538Na">538Na</option>';
+            LINENAME_options_str  += '<option value="539E">539E</option>';
+            LINENAME_options_str  += '<option value="539W">539W</option>';
+            LINENAME_options_str  += '<option value="53E">53E</option>';
+            LINENAME_options_str  += '<option value="53Ea">53Ea</option>';
+            LINENAME_options_str  += '<option value="53W">53W</option>';
+            LINENAME_options_str  += '<option value="53Wa">53Wa</option>';
+            LINENAME_options_str  += '<option value="540E">540E</option>';
+            LINENAME_options_str  += '<option value="540W">540W</option>';
+            LINENAME_options_str  += '<option value="541E">541E</option>';
+            LINENAME_options_str  += '<option value="541N">541N</option>';
+            LINENAME_options_str  += '<option value="541S">541S</option>';
+            LINENAME_options_str  += '<option value="542N">542N</option>';
+            LINENAME_options_str  += '<option value="542S">542S</option>';
+            LINENAME_options_str  += '<option value="543N">543N</option>';
+            LINENAME_options_str  += '<option value="543S">543S</option>';
+            LINENAME_options_str  += '<option value="544E">544E</option>';
+            LINENAME_options_str  += '<option value="545E">545E</option>';
+            LINENAME_options_str  += '<option value="545W">545W</option>';
+            LINENAME_options_str  += '<option value="546E">546E</option>';
+            LINENAME_options_str  += '<option value="546W">546W</option>';
+            LINENAME_options_str  += '<option value="547N">547N</option>';
+            LINENAME_options_str  += '<option value="547Na">547Na</option>';
+            LINENAME_options_str  += '<option value="547S">547S</option>';
+            LINENAME_options_str  += '<option value="548N">548N</option>';
+            LINENAME_options_str  += '<option value="548S">548S</option>';
+            LINENAME_options_str  += '<option value="54E">54E</option>';
+            LINENAME_options_str  += '<option value="54W">54W</option>';
+            LINENAME_options_str  += '<option value="550N">550N</option>';
+            LINENAME_options_str  += '<option value="550S">550S</option>';
+            LINENAME_options_str  += '<option value="552N">552N</option>';
+            LINENAME_options_str  += '<option value="552S">552S</option>';
+            LINENAME_options_str  += '<option value="553HE">553HE</option>';
+            LINENAME_options_str  += '<option value="553VE">553VE</option>';
+            LINENAME_options_str  += '<option value="555E">555E</option>';
+            LINENAME_options_str  += '<option value="555Ea">555Ea</option>';
+            LINENAME_options_str  += '<option value="555Eb">555Eb</option>';
+            LINENAME_options_str  += '<option value="555W">555W</option>';
+            LINENAME_options_str  += '<option value="555Wc">555Wc</option>';
+            LINENAME_options_str  += '<option value="556N">556N</option>';
+            LINENAME_options_str  += '<option value="556S">556S</option>';
+            LINENAME_options_str  += '<option value="557N">557N</option>';
+            LINENAME_options_str  += '<option value="557S">557S</option>';
+            LINENAME_options_str  += '<option value="558N">558N</option>';
+            LINENAME_options_str  += '<option value="558S">558S</option>';
+            LINENAME_options_str  += '<option value="559S">559S</option>';
+            LINENAME_options_str  += '<option value="55N">55N</option>';
+            LINENAME_options_str  += '<option value="55S">55S</option>';
+            LINENAME_options_str  += '<option value="560Na">560Na</option>';
+            LINENAME_options_str  += '<option value="560S">560S</option>';
+            LINENAME_options_str  += '<option value="562E">562E</option>';
+            LINENAME_options_str  += '<option value="562Ea">562Ea</option>';
+            LINENAME_options_str  += '<option value="562W">562W</option>';
+            LINENAME_options_str  += '<option value="564HE">564HE</option>';
+            LINENAME_options_str  += '<option value="564VE">564VE</option>';
+            LINENAME_options_str  += '<option value="566N">566N</option>';
+            LINENAME_options_str  += '<option value="566S">566S</option>';
+            LINENAME_options_str  += '<option value="567E">567E</option>';
+            LINENAME_options_str  += '<option value="567Ea">567Ea</option>';
+            LINENAME_options_str  += '<option value="567W">567W</option>';
+            LINENAME_options_str  += '<option value="567Wa">567Wa</option>';
+            LINENAME_options_str  += '<option value="568N">568N</option>';
+            LINENAME_options_str  += '<option value="568S">568S</option>';
+            LINENAME_options_str  += '<option value="56N">56N</option>';
+            LINENAME_options_str  += '<option value="56S">56S</option>';
+            LINENAME_options_str  += '<option value="570E">570E</option>';
+            LINENAME_options_str  += '<option value="570W">570W</option>';
+            LINENAME_options_str  += '<option value="571N">571N</option>';
+            LINENAME_options_str  += '<option value="571S">571S</option>';
+            LINENAME_options_str  += '<option value="571XN">571XN</option>';
+            LINENAME_options_str  += '<option value="571XS">571XS</option>';
+            LINENAME_options_str  += '<option value="572E">572E</option>';
+            LINENAME_options_str  += '<option value="574N">574N</option>';
+            LINENAME_options_str  += '<option value="574Sa">574Sa</option>';
+            LINENAME_options_str  += '<option value="574Sc">574Sc</option>';
+            LINENAME_options_str  += '<option value="575E">575E</option>';
+            LINENAME_options_str  += '<option value="575W">575W</option>';
+            LINENAME_options_str  += '<option value="576Nb">576Nb</option>';
+            LINENAME_options_str  += '<option value="576Sa">576Sa</option>';
+            LINENAME_options_str  += '<option value="577S">577S</option>';
+            LINENAME_options_str  += '<option value="579E">579E</option>';
+            LINENAME_options_str  += '<option value="579Ea">579Ea</option>';
+            LINENAME_options_str  += '<option value="579W">579W</option>';
+            LINENAME_options_str  += '<option value="579Wa">579Wa</option>';
+            LINENAME_options_str  += '<option value="57N">57N</option>';
+            LINENAME_options_str  += '<option value="57S">57S</option>';
+            LINENAME_options_str  += '<option value="580E">580E</option>';
+            LINENAME_options_str  += '<option value="580W">580W</option>';
+            LINENAME_options_str  += '<option value="581E">581E</option>';
+            LINENAME_options_str  += '<option value="581W">581W</option>';
+            LINENAME_options_str  += '<option value="582E">582E</option>';
+            LINENAME_options_str  += '<option value="582W">582W</option>';
+            LINENAME_options_str  += '<option value="583E">583E</option>';
+            LINENAME_options_str  += '<option value="583Ea">583Ea</option>';
+            LINENAME_options_str  += '<option value="583W">583W</option>';
+            LINENAME_options_str  += '<option value="583Wa">583Wa</option>';
+            LINENAME_options_str  += '<option value="584E">584E</option>';
+            LINENAME_options_str  += '<option value="584W">584W</option>';
+            LINENAME_options_str  += '<option value="585W">585W</option>';
+            LINENAME_options_str  += '<option value="586W">586W</option>';
+            LINENAME_options_str  += '<option value="589E">589E</option>';
+            LINENAME_options_str  += '<option value="5N">5N</option>';
+            LINENAME_options_str  += '<option value="5S">5S</option>';
+            LINENAME_options_str  += '<option value="6...">6...</option>';
+            LINENAME_options_str  += '<option value="601E">601E</option>';
+            LINENAME_options_str  += '<option value="601Ea">601Ea</option>';
+            LINENAME_options_str  += '<option value="601Wa">601Wa</option>';
+            LINENAME_options_str  += '<option value="602E">602E</option>';
+            LINENAME_options_str  += '<option value="602W">602W</option>';
+            LINENAME_options_str  += '<option value="604N">604N</option>';
+            LINENAME_options_str  += '<option value="604S">604S</option>';
+            LINENAME_options_str  += '<option value="605N">605N</option>';
+            LINENAME_options_str  += '<option value="605Na">605Na</option>';
+            LINENAME_options_str  += '<option value="605S">605S</option>';
+            LINENAME_options_str  += '<option value="605Sa">605Sa</option>';
+            LINENAME_options_str  += '<option value="606E">606E</option>';
+            LINENAME_options_str  += '<option value="606W">606W</option>';
+            LINENAME_options_str  += '<option value="607N">607N</option>';
+            LINENAME_options_str  += '<option value="607S">607S</option>';
+            LINENAME_options_str  += '<option value="607Sb">607Sb</option>';
+            LINENAME_options_str  += '<option value="607W">607W</option>';
+            LINENAME_options_str  += '<option value="607Wa">607Wa</option>';
+            LINENAME_options_str  += '<option value="610Na">610Na</option>';
+            LINENAME_options_str  += '<option value="610Sa">610Sa</option>';
+            LINENAME_options_str  += '<option value="611N">611N</option>';
+            LINENAME_options_str  += '<option value="611Na">611Na</option>';
+            LINENAME_options_str  += '<option value="611S">611S</option>';
+            LINENAME_options_str  += '<option value="611Sa">611Sa</option>';
+            LINENAME_options_str  += '<option value="612E">612E</option>';
+            LINENAME_options_str  += '<option value="612W">612W</option>';
+            LINENAME_options_str  += '<option value="613N">613N</option>';
+            LINENAME_options_str  += '<option value="613S">613S</option>';
+            LINENAME_options_str  += '<option value="613Sa">613Sa</option>';
+            LINENAME_options_str  += '<option value="614E">614E</option>';
+            LINENAME_options_str  += '<option value="615E">615E</option>';
+            LINENAME_options_str  += '<option value="615W">615W</option>';
+            LINENAME_options_str  += '<option value="616Na">616Na</option>';
+            LINENAME_options_str  += '<option value="616Sa">616Sa</option>';
+            LINENAME_options_str  += '<option value="617E">617E</option>';
+            LINENAME_options_str  += '<option value="617W">617W</option>';
+            LINENAME_options_str  += '<option value="619E">619E</option>';
+            LINENAME_options_str  += '<option value="61E">61E</option>';
+            LINENAME_options_str  += '<option value="61W">61W</option>';
+            LINENAME_options_str  += '<option value="620N">620N</option>';
+            LINENAME_options_str  += '<option value="620S">620S</option>';
+            LINENAME_options_str  += '<option value="621N">621N</option>';
+            LINENAME_options_str  += '<option value="621S">621S</option>';
+            LINENAME_options_str  += '<option value="622E">622E</option>';
+            LINENAME_options_str  += '<option value="622W">622W</option>';
+            LINENAME_options_str  += '<option value="622XW">622XW</option>';
+            LINENAME_options_str  += '<option value="623HE">623HE</option>';
+            LINENAME_options_str  += '<option value="623VE">623VE</option>';
+            LINENAME_options_str  += '<option value="625S">625S</option>';
+            LINENAME_options_str  += '<option value="626Ea">626Ea</option>';
+            LINENAME_options_str  += '<option value="626W">626W</option>';
+            LINENAME_options_str  += '<option value="626Wb">626Wb</option>';
+            LINENAME_options_str  += '<option value="627E">627E</option>';
+            LINENAME_options_str  += '<option value="627W">627W</option>';
+            LINENAME_options_str  += '<option value="627Wa">627Wa</option>';
+            LINENAME_options_str  += '<option value="629N">629N</option>';
+            LINENAME_options_str  += '<option value="629S">629S</option>';
+            LINENAME_options_str  += '<option value="629Sa">629Sa</option>';
+            LINENAME_options_str  += '<option value="630E">630E</option>';
+            LINENAME_options_str  += '<option value="630W">630W</option>';
+            LINENAME_options_str  += '<option value="631E">631E</option>';
+            LINENAME_options_str  += '<option value="631W">631W</option>';
+            LINENAME_options_str  += '<option value="631XE">631XE</option>';
+            LINENAME_options_str  += '<option value="632N">632N</option>';
+            LINENAME_options_str  += '<option value="633E">633E</option>';
+            LINENAME_options_str  += '<option value="633W">633W</option>';
+            LINENAME_options_str  += '<option value="634N">634N</option>';
+            LINENAME_options_str  += '<option value="634S">634S</option>';
+            LINENAME_options_str  += '<option value="635N">635N</option>';
+            LINENAME_options_str  += '<option value="635S">635S</option>';
+            LINENAME_options_str  += '<option value="636E">636E</option>';
+            LINENAME_options_str  += '<option value="636W">636W</option>';
+            LINENAME_options_str  += '<option value="637Na">637Na</option>';
+            LINENAME_options_str  += '<option value="637Sb">637Sb</option>';
+            LINENAME_options_str  += '<option value="638E">638E</option>';
+            LINENAME_options_str  += '<option value="639N">639N</option>';
+            LINENAME_options_str  += '<option value="639Nc">639Nc</option>';
+            LINENAME_options_str  += '<option value="639S">639S</option>';
+            LINENAME_options_str  += '<option value="639Sa">639Sa</option>';
+            LINENAME_options_str  += '<option value="641N">641N</option>';
+            LINENAME_options_str  += '<option value="641S">641S</option>';
+            LINENAME_options_str  += '<option value="642N">642N</option>';
+            LINENAME_options_str  += '<option value="642S">642S</option>';
+            LINENAME_options_str  += '<option value="643W">643W</option>';
+            LINENAME_options_str  += '<option value="644W">644W</option>';
+            LINENAME_options_str  += '<option value="645E">645E</option>';
+            LINENAME_options_str  += '<option value="646E">646E</option>';
+            LINENAME_options_str  += '<option value="647E">647E</option>';
+            LINENAME_options_str  += '<option value="647W">647W</option>';
+            LINENAME_options_str  += '<option value="648E">648E</option>';
+            LINENAME_options_str  += '<option value="648Nc">648Nc</option>';
+            LINENAME_options_str  += '<option value="648S">648S</option>';
+            LINENAME_options_str  += '<option value="648Sc">648Sc</option>';
+            LINENAME_options_str  += '<option value="648W">648W</option>';
+            LINENAME_options_str  += '<option value="649N">649N</option>';
+            LINENAME_options_str  += '<option value="651N">651N</option>';
+            LINENAME_options_str  += '<option value="651S">651S</option>';
+            LINENAME_options_str  += '<option value="654Ea">654Ea</option>';
+            LINENAME_options_str  += '<option value="655E">655E</option>';
+            LINENAME_options_str  += '<option value="656E">656E</option>';
+            LINENAME_options_str  += '<option value="656S">656S</option>';
+            LINENAME_options_str  += '<option value="656W">656W</option>';
+            LINENAME_options_str  += '<option value="657E">657E</option>';
+            LINENAME_options_str  += '<option value="657N">657N</option>';
+            LINENAME_options_str  += '<option value="657S">657S</option>';
+            LINENAME_options_str  += '<option value="657W">657W</option>';
+            LINENAME_options_str  += '<option value="658E">658E</option>';
+            LINENAME_options_str  += '<option value="658W">658W</option>';
+            LINENAME_options_str  += '<option value="65E">65E</option>';
+            LINENAME_options_str  += '<option value="65W">65W</option>';
+            LINENAME_options_str  += '<option value="660HE">660HE</option>';
+            LINENAME_options_str  += '<option value="660VE">660VE</option>';
+            LINENAME_options_str  += '<option value="661N">661N</option>';
+            LINENAME_options_str  += '<option value="661S">661S</option>';
+            LINENAME_options_str  += '<option value="662E">662E</option>';
+            LINENAME_options_str  += '<option value="664N">664N</option>';
+            LINENAME_options_str  += '<option value="664S">664S</option>';
+            LINENAME_options_str  += '<option value="665E">665E</option>';
+            LINENAME_options_str  += '<option value="665Na">665Na</option>';
+            LINENAME_options_str  += '<option value="665S">665S</option>';
+            LINENAME_options_str  += '<option value="665Wa">665Wa</option>';
+            LINENAME_options_str  += '<option value="665Wb">665Wb</option>';
+            LINENAME_options_str  += '<option value="666Sa">666Sa</option>';
+            LINENAME_options_str  += '<option value="667N">667N</option>';
+            LINENAME_options_str  += '<option value="667S">667S</option>';
+            LINENAME_options_str  += '<option value="668S">668S</option>';
+            LINENAME_options_str  += '<option value="66E">66E</option>';
+            LINENAME_options_str  += '<option value="66W">66W</option>';
+            LINENAME_options_str  += '<option value="670E">670E</option>';
+            LINENAME_options_str  += '<option value="670W">670W</option>';
+            LINENAME_options_str  += '<option value="670XW">670XW</option>';
+            LINENAME_options_str  += '<option value="676N">676N</option>';
+            LINENAME_options_str  += '<option value="676S">676S</option>';
+            LINENAME_options_str  += '<option value="676XN">676XN</option>';
+            LINENAME_options_str  += '<option value="676XS">676XS</option>';
+            LINENAME_options_str  += '<option value="677E">677E</option>';
+            LINENAME_options_str  += '<option value="677W">677W</option>';
+            LINENAME_options_str  += '<option value="67N">67N</option>';
+            LINENAME_options_str  += '<option value="67S">67S</option>';
+            LINENAME_options_str  += '<option value="680W">680W</option>';
+            LINENAME_options_str  += '<option value="681E">681E</option>';
+            LINENAME_options_str  += '<option value="681W">681W</option>';
+            LINENAME_options_str  += '<option value="682N">682N</option>';
+            LINENAME_options_str  += '<option value="682S">682S</option>';
+            LINENAME_options_str  += '<option value="683E">683E</option>';
+            LINENAME_options_str  += '<option value="683W">683W</option>';
+            LINENAME_options_str  += '<option value="683Wa">683Wa</option>';
+            LINENAME_options_str  += '<option value="684E">684E</option>';
+            LINENAME_options_str  += '<option value="684W">684W</option>';
+            LINENAME_options_str  += '<option value="685E">685E</option>';
+            LINENAME_options_str  += '<option value="685W">685W</option>';
+            LINENAME_options_str  += '<option value="687N">687N</option>';
+            LINENAME_options_str  += '<option value="687S">687S</option>';
+            LINENAME_options_str  += '<option value="688E">688E</option>';
+            LINENAME_options_str  += '<option value="688Ea">688Ea</option>';
+            LINENAME_options_str  += '<option value="688Wa">688Wa</option>';
+            LINENAME_options_str  += '<option value="69E">69E</option>';
+            LINENAME_options_str  += '<option value="69Wa">69Wa</option>';
+            LINENAME_options_str  += '<option value="6E">6E</option>';
+            LINENAME_options_str  += '<option value="6W">6W</option>';
+            LINENAME_options_str  += '<option value="702E">702E</option>';
+            LINENAME_options_str  += '<option value="702Ea">702Ea</option>';
+            LINENAME_options_str  += '<option value="702W">702W</option>';
+            LINENAME_options_str  += '<option value="703N">703N</option>';
+            LINENAME_options_str  += '<option value="703S">703S</option>';
+            LINENAME_options_str  += '<option value="703Sa">703Sa</option>';
+            LINENAME_options_str  += '<option value="704N">704N</option>';
+            LINENAME_options_str  += '<option value="704S">704S</option>';
+            LINENAME_options_str  += '<option value="705N">705N</option>';
+            LINENAME_options_str  += '<option value="705Na">705Na</option>';
+            LINENAME_options_str  += '<option value="705S">705S</option>';
+            LINENAME_options_str  += '<option value="705Sa">705Sa</option>';
+            LINENAME_options_str  += '<option value="706E">706E</option>';
+            LINENAME_options_str  += '<option value="706W">706W</option>';
+            LINENAME_options_str  += '<option value="707N">707N</option>';
+            LINENAME_options_str  += '<option value="707S">707S</option>';
+            LINENAME_options_str  += '<option value="708E">708E</option>';
+            LINENAME_options_str  += '<option value="708N">708N</option>';
+            LINENAME_options_str  += '<option value="708S">708S</option>';
+            LINENAME_options_str  += '<option value="708W">708W</option>';
+            LINENAME_options_str  += '<option value="709E">709E</option>';
+            LINENAME_options_str  += '<option value="709W">709W</option>';
+            LINENAME_options_str  += '<option value="710N">710N</option>';
+            LINENAME_options_str  += '<option value="710S">710S</option>';
+            LINENAME_options_str  += '<option value="711E">711E</option>';
+            LINENAME_options_str  += '<option value="711W">711W</option>';
+            LINENAME_options_str  += '<option value="713Ea">713Ea</option>';
+            LINENAME_options_str  += '<option value="713Wa">713Wa</option>';
+            LINENAME_options_str  += '<option value="714E">714E</option>';
+            LINENAME_options_str  += '<option value="714W">714W</option>';
+            LINENAME_options_str  += '<option value="715N">715N</option>';
+            LINENAME_options_str  += '<option value="715S">715S</option>';
+            LINENAME_options_str  += '<option value="716N">716N</option>';
+            LINENAME_options_str  += '<option value="717N">717N</option>';
+            LINENAME_options_str  += '<option value="717S">717S</option>';
+            LINENAME_options_str  += '<option value="718E">718E</option>';
+            LINENAME_options_str  += '<option value="718W">718W</option>';
+            LINENAME_options_str  += '<option value="719N">719N</option>';
+            LINENAME_options_str  += '<option value="719S">719S</option>';
+            LINENAME_options_str  += '<option value="71E">71E</option>';
+            LINENAME_options_str  += '<option value="71W">71W</option>';
+            LINENAME_options_str  += '<option value="721Na">721Na</option>';
+            LINENAME_options_str  += '<option value="721Sa">721Sa</option>';
+            LINENAME_options_str  += '<option value="723E">723E</option>';
+            LINENAME_options_str  += '<option value="723W">723W</option>';
+            LINENAME_options_str  += '<option value="725E">725E</option>';
+            LINENAME_options_str  += '<option value="725Ea">725Ea</option>';
+            LINENAME_options_str  += '<option value="725W">725W</option>';
+            LINENAME_options_str  += '<option value="725Wa">725Wa</option>';
+            LINENAME_options_str  += '<option value="726N">726N</option>';
+            LINENAME_options_str  += '<option value="726Na">726Na</option>';
+            LINENAME_options_str  += '<option value="726Nb">726Nb</option>';
+            LINENAME_options_str  += '<option value="726S">726S</option>';
+            LINENAME_options_str  += '<option value="726Sa">726Sa</option>';
+            LINENAME_options_str  += '<option value="727N">727N</option>';
+            LINENAME_options_str  += '<option value="727S">727S</option>';
+            LINENAME_options_str  += '<option value="729N">729N</option>';
+            LINENAME_options_str  += '<option value="729S">729S</option>';
+            LINENAME_options_str  += '<option value="72E">72E</option>';
+            LINENAME_options_str  += '<option value="72W">72W</option>';
+            LINENAME_options_str  += '<option value="731E">731E</option>';
+            LINENAME_options_str  += '<option value="737N">737N</option>';
+            LINENAME_options_str  += '<option value="737S">737S</option>';
+            LINENAME_options_str  += '<option value="738N">738N</option>';
+            LINENAME_options_str  += '<option value="738S">738S</option>';
+            LINENAME_options_str  += '<option value="740E">740E</option>';
+            LINENAME_options_str  += '<option value="740W">740W</option>';
+            LINENAME_options_str  += '<option value="742E">742E</option>';
+            LINENAME_options_str  += '<option value="742W">742W</option>';
+            LINENAME_options_str  += '<option value="744N">744N</option>';
+            LINENAME_options_str  += '<option value="744S">744S</option>';
+            LINENAME_options_str  += '<option value="747E">747E</option>';
+            LINENAME_options_str  += '<option value="747W">747W</option>';
+            LINENAME_options_str  += '<option value="748E">748E</option>';
+            LINENAME_options_str  += '<option value="748Ea">748Ea</option>';
+            LINENAME_options_str  += '<option value="748W">748W</option>';
+            LINENAME_options_str  += '<option value="748Wa">748Wa</option>';
+            LINENAME_options_str  += '<option value="749E">749E</option>';
+            LINENAME_options_str  += '<option value="749W">749W</option>';
+            LINENAME_options_str  += '<option value="74E">74E</option>';
+            LINENAME_options_str  += '<option value="74W">74W</option>';
+            LINENAME_options_str  += '<option value="750N">750N</option>';
+            LINENAME_options_str  += '<option value="750Na">750Na</option>';
+            LINENAME_options_str  += '<option value="750S">750S</option>';
+            LINENAME_options_str  += '<option value="750Sa">750Sa</option>';
+            LINENAME_options_str  += '<option value="751Nb">751Nb</option>';
+            LINENAME_options_str  += '<option value="751Nc">751Nc</option>';
+            LINENAME_options_str  += '<option value="751S">751S</option>';
+            LINENAME_options_str  += '<option value="751Sa">751Sa</option>';
+            LINENAME_options_str  += '<option value="751Sc">751Sc</option>';
+            LINENAME_options_str  += '<option value="752E">752E</option>';
+            LINENAME_options_str  += '<option value="752Ea">752Ea</option>';
+            LINENAME_options_str  += '<option value="752W">752W</option>';
+            LINENAME_options_str  += '<option value="753E">753E</option>';
+            LINENAME_options_str  += '<option value="753Wa">753Wa</option>';
+            LINENAME_options_str  += '<option value="753Wb">753Wb</option>';
+            LINENAME_options_str  += '<option value="754N">754N</option>';
+            LINENAME_options_str  += '<option value="754S">754S</option>';
+            LINENAME_options_str  += '<option value="756E">756E</option>';
+            LINENAME_options_str  += '<option value="756W">756W</option>';
+            LINENAME_options_str  += '<option value="758E">758E</option>';
+            LINENAME_options_str  += '<option value="758Ea">758Ea</option>';
+            LINENAME_options_str  += '<option value="758W">758W</option>';
+            LINENAME_options_str  += '<option value="758Wa">758Wa</option>';
+            LINENAME_options_str  += '<option value="759E">759E</option>';
+            LINENAME_options_str  += '<option value="759Ea">759Ea</option>';
+            LINENAME_options_str  += '<option value="759W">759W</option>';
+            LINENAME_options_str  += '<option value="759Wa">759Wa</option>';
+            LINENAME_options_str  += '<option value="75N">75N</option>';
+            LINENAME_options_str  += '<option value="75S">75S</option>';
+            LINENAME_options_str  += '<option value="761N">761N</option>';
+            LINENAME_options_str  += '<option value="761S">761S</option>';
+            LINENAME_options_str  += '<option value="761Sa">761Sa</option>';
+            LINENAME_options_str  += '<option value="76N">76N</option>';
+            LINENAME_options_str  += '<option value="76Na">76Na</option>';
+            LINENAME_options_str  += '<option value="76S">76S</option>';
+            LINENAME_options_str  += '<option value="776E">776E</option>';
+            LINENAME_options_str  += '<option value="777N">777N</option>';
+            LINENAME_options_str  += '<option value="777S">777S</option>';
+            LINENAME_options_str  += '<option value="778N">778N</option>';
+            LINENAME_options_str  += '<option value="778S">778S</option>';
+            LINENAME_options_str  += '<option value="779E">779E</option>';
+            LINENAME_options_str  += '<option value="779W">779W</option>';
+            LINENAME_options_str  += '<option value="780E">780E</option>';
+            LINENAME_options_str  += '<option value="780W">780W</option>';
+            LINENAME_options_str  += '<option value="780XE">780XE</option>';
+            LINENAME_options_str  += '<option value="780XW">780XW</option>';
+            LINENAME_options_str  += '<option value="781E">781E</option>';
+            LINENAME_options_str  += '<option value="781W">781W</option>';
+            LINENAME_options_str  += '<option value="782E">782E</option>';
+            LINENAME_options_str  += '<option value="782W">782W</option>';
+            LINENAME_options_str  += '<option value="783N">783N</option>';
+            LINENAME_options_str  += '<option value="783S">783S</option>';
+            LINENAME_options_str  += '<option value="784Nb">784Nb</option>';
+            LINENAME_options_str  += '<option value="784Nf">784Nf</option>';
+            LINENAME_options_str  += '<option value="784S">784S</option>';
+            LINENAME_options_str  += '<option value="784Sa">784Sa</option>';
+            LINENAME_options_str  += '<option value="784XN">784XN</option>';
+            LINENAME_options_str  += '<option value="785N">785N</option>';
+            LINENAME_options_str  += '<option value="786E">786E</option>';
+            LINENAME_options_str  += '<option value="786W">786W</option>';
+            LINENAME_options_str  += '<option value="787E">787E</option>';
+            LINENAME_options_str  += '<option value="787Ec">787Ec</option>';
+            LINENAME_options_str  += '<option value="787W">787W</option>';
+            LINENAME_options_str  += '<option value="788N">788N</option>';
+            LINENAME_options_str  += '<option value="788S">788S</option>';
+            LINENAME_options_str  += '<option value="789W">789W</option>';
+            LINENAME_options_str  += '<option value="801E">801E</option>';
+            LINENAME_options_str  += '<option value="801W">801W</option>';
+            LINENAME_options_str  += '<option value="802E">802E</option>';
+            LINENAME_options_str  += '<option value="802W">802W</option>';
+            LINENAME_options_str  += '<option value="803E">803E</option>';
+            LINENAME_options_str  += '<option value="803W">803W</option>';
+            LINENAME_options_str  += '<option value="804W">804W</option>';
+            LINENAME_options_str  += '<option value="805W">805W</option>';
+            LINENAME_options_str  += '<option value="805Wb">805Wb</option>';
+            LINENAME_options_str  += '<option value="806N">806N</option>';
+            LINENAME_options_str  += '<option value="807N">807N</option>';
+            LINENAME_options_str  += '<option value="807S">807S</option>';
+            LINENAME_options_str  += '<option value="807Sa">807Sa</option>';
+            LINENAME_options_str  += '<option value="809CN">809CN</option>';
+            LINENAME_options_str  += '<option value="809N">809N</option>';
+            LINENAME_options_str  += '<option value="809Na">809Na</option>';
+            LINENAME_options_str  += '<option value="810N">810N</option>';
+            LINENAME_options_str  += '<option value="810Na">810Na</option>';
+            LINENAME_options_str  += '<option value="812CW">812CW</option>';
+            LINENAME_options_str  += '<option value="813CW">813CW</option>';
+            LINENAME_options_str  += '<option value="814E">814E</option>';
+            LINENAME_options_str  += '<option value="815CW">815CW</option>';
+            LINENAME_options_str  += '<option value="816E">816E</option>';
+            LINENAME_options_str  += '<option value="816N">816N</option>';
+            LINENAME_options_str  += '<option value="816W">816W</option>';
+            LINENAME_options_str  += '<option value="818CN">818CN</option>';
+            LINENAME_options_str  += '<option value="819Ea">819Ea</option>';
+            LINENAME_options_str  += '<option value="819Ed">819Ed</option>';
+            LINENAME_options_str  += '<option value="819W">819W</option>';
+            LINENAME_options_str  += '<option value="821N">821N</option>';
+            LINENAME_options_str  += '<option value="821Sa">821Sa</option>';
+            LINENAME_options_str  += '<option value="822N">822N</option>';
+            LINENAME_options_str  += '<option value="823W">823W</option>';
+            LINENAME_options_str  += '<option value="824N">824N</option>';
+            LINENAME_options_str  += '<option value="824Na">824Na</option>';
+            LINENAME_options_str  += '<option value="824S">824S</option>';
+            LINENAME_options_str  += '<option value="824Sa">824Sa</option>';
+            LINENAME_options_str  += '<option value="826E">826E</option>';
+            LINENAME_options_str  += '<option value="826W">826W</option>';
+            LINENAME_options_str  += '<option value="827E">827E</option>';
+            LINENAME_options_str  += '<option value="827N">827N</option>';
+            LINENAME_options_str  += '<option value="827S">827S</option>';
+            LINENAME_options_str  += '<option value="828E">828E</option>';
+            LINENAME_options_str  += '<option value="828W">828W</option>';
+            LINENAME_options_str  += '<option value="829E">829E</option>';
+            LINENAME_options_str  += '<option value="829W">829W</option>';
+            LINENAME_options_str  += '<option value="830N">830N</option>';
+            LINENAME_options_str  += '<option value="830S">830S</option>';
+            LINENAME_options_str  += '<option value="831N">831N</option>';
+            LINENAME_options_str  += '<option value="831S">831S</option>';
+            LINENAME_options_str  += '<option value="832N">832N</option>';
+            LINENAME_options_str  += '<option value="832S">832S</option>';
+            LINENAME_options_str  += '<option value="833N">833N</option>';
+            LINENAME_options_str  += '<option value="833S">833S</option>';
+            LINENAME_options_str  += '<option value="834E">834E</option>';
+            LINENAME_options_str  += '<option value="834W">834W</option>';
+            LINENAME_options_str  += '<option value="835N">835N</option>';
+            LINENAME_options_str  += '<option value="835Na">835Na</option>';
+            LINENAME_options_str  += '<option value="835Nb">835Nb</option>';
+            LINENAME_options_str  += '<option value="835S">835S</option>';
+            LINENAME_options_str  += '<option value="835Sb">835Sb</option>';
+            LINENAME_options_str  += '<option value="836E">836E</option>';
+            LINENAME_options_str  += '<option value="836W">836W</option>';
+            LINENAME_options_str  += '<option value="837N">837N</option>';
+            LINENAME_options_str  += '<option value="837S">837S</option>';
+            LINENAME_options_str  += '<option value="837Sa">837Sa</option>';
+            LINENAME_options_str  += '<option value="837Sb">837Sb</option>';
+            LINENAME_options_str  += '<option value="838N">838N</option>';
+            LINENAME_options_str  += '<option value="838S">838S</option>';
+            LINENAME_options_str  += '<option value="839E">839E</option>';
+            LINENAME_options_str  += '<option value="839Ea">839Ea</option>';
+            LINENAME_options_str  += '<option value="839W">839W</option>';
+            LINENAME_options_str  += '<option value="839Wa">839Wa</option>';
+            LINENAME_options_str  += '<option value="840N">840N</option>';
+            LINENAME_options_str  += '<option value="840Sa">840Sa</option>';
+            LINENAME_options_str  += '<option value="842S">842S</option>';
+            LINENAME_options_str  += '<option value="843N">843N</option>';
+            LINENAME_options_str  += '<option value="843Na">843Na</option>';
+            LINENAME_options_str  += '<option value="843S">843S</option>';
+            LINENAME_options_str  += '<option value="843Sa">843Sa</option>';
+            LINENAME_options_str  += '<option value="845W">845W</option>';
+            LINENAME_options_str  += '<option value="846E">846E</option>';
+            LINENAME_options_str  += '<option value="846Ea">846Ea</option>';
+            LINENAME_options_str  += '<option value="846W">846W</option>';
+            LINENAME_options_str  += '<option value="846Wa">846Wa</option>';
+            LINENAME_options_str  += '<option value="847N">847N</option>';
+            LINENAME_options_str  += '<option value="847Sa">847Sa</option>';
+            LINENAME_options_str  += '<option value="848E">848E</option>';
+            LINENAME_options_str  += '<option value="848Na">848Na</option>';
+            LINENAME_options_str  += '<option value="848S">848S</option>';
+            LINENAME_options_str  += '<option value="848Sa">848Sa</option>';
+            LINENAME_options_str  += '<option value="849E">849E</option>';
+            LINENAME_options_str  += '<option value="849W">849W</option>';
+            LINENAME_options_str  += '<option value="850E">850E</option>';
+            LINENAME_options_str  += '<option value="850W">850W</option>';
+            LINENAME_options_str  += '<option value="852N">852N</option>';
+            LINENAME_options_str  += '<option value="854N">854N</option>';
+            LINENAME_options_str  += '<option value="854S">854S</option>';
+            LINENAME_options_str  += '<option value="856N">856N</option>';
+            LINENAME_options_str  += '<option value="856S">856S</option>';
+            LINENAME_options_str  += '<option value="858N">858N</option>';
+            LINENAME_options_str  += '<option value="858S">858S</option>';
+            LINENAME_options_str  += '<option value="858Sc">858Sc</option>';
+            LINENAME_options_str  += '<option value="861N">861N</option>';
+            LINENAME_options_str  += '<option value="865E">865E</option>';
+            LINENAME_options_str  += '<option value="865W">865W</option>';
+            LINENAME_options_str  += '<option value="869W">869W</option>';
+            LINENAME_options_str  += '<option value="873E">873E</option>';
+            LINENAME_options_str  += '<option value="873W">873W</option>';
+            LINENAME_options_str  += '<option value="875E">875E</option>';
+            LINENAME_options_str  += '<option value="875W">875W</option>';
+            LINENAME_options_str  += '<option value="912E">912E</option>';
+            LINENAME_options_str  += '<option value="912W">912W</option>';
+            LINENAME_options_str  += '<option value="914E">914E</option>';
+            LINENAME_options_str  += '<option value="914W">914W</option>';
+            LINENAME_options_str  += '<option value="AF1N">AF1N</option>';
+            LINENAME_options_str  += '<option value="AF1S">AF1S</option>';
+            LINENAME_options_str  += '<option value="AF2N">AF2N</option>';
+            LINENAME_options_str  += '<option value="AF2S">AF2S</option>';
+            LINENAME_options_str  += '<option value="AF3N">AF3N</option>';
+            LINENAME_options_str  += '<option value="AF3S">AF3S</option>';
+            LINENAME_options_str  += '<option value="AF4E">AF4E</option>';
+            LINENAME_options_str  += '<option value="AF4W">AF4W</option>';
+            LINENAME_options_str  += '<option value="AF5N">AF5N</option>';
+            LINENAME_options_str  += '<option value="AF5S">AF5S</option>';
+            LINENAME_options_str  += '<option value="STOMH1E">STOMH1E</option>';
+            LINENAME_options_str  += '<option value="STOMH1W">STOMH1W</option>';
+            LINENAME_options_str  += '<option value="STOMJ1E">STOMJ1E</option>';
+            LINENAME_options_str  += '<option value="STOMJ1W">STOMJ1W</option>';
+            LINENAME_options_str  += '<option value="STOMJ2N">STOMJ2N</option>';
+            LINENAME_options_str  += '<option value="STOMJ2S">STOMJ2S</option>';
+            LINENAME_options_str  += '<option value="STOMKE">STOMKE</option>';
+            LINENAME_options_str  += '<option value="STOMKW">STOMKW</option>';
+            sel_LINENAME.innerHTML = LINENAME_options_str;
+            div_LINENAME.appendChild(sel_LINENAME);
+            var lab_LINENAME = document.createElement('div');
+            lab_LINENAME.innerHTML = 'LINENAME';
+            lab_LINENAME.className = 'filterlabel';
+            div_LINENAME.appendChild(lab_LINENAME);
+            var reset_LINENAME = document.createElement('div');
+            reset_LINENAME.innerHTML = 'clear filter';
+            reset_LINENAME.className = 'filterlabel';
+            reset_LINENAME.onclick = function() {
+                var options = document.getElementById("sel_LINENAME").options;
+                for (var i=0; i < options.length; i++) {
+                    options[i].selected = false;
+                }
+                filterFunc();
+            };
+            div_LINENAME.appendChild(reset_LINENAME);
+        </script>
+    </body>
+</html>
